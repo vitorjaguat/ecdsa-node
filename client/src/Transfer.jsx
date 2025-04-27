@@ -24,11 +24,19 @@ function Transfer({ address, setBalance, privateKey }) {
     const privateKeyBytes = hexToBytes(privateKey);
 
     // Use the correct signature method
-    const signatureUint8Array = await secp.sign(messageHash, privateKeyBytes);
+    const [signatureUint8Array, recoveryBit] = await secp.sign(
+      messageHash,
+      privateKeyBytes,
+      {
+        recovered: true,
+      }
+    );
 
     // Convert the signature to hex for transport
     const signature = toHex(signatureUint8Array);
-    console.log('Signature:', signature);
+    console.log('Signature Uint:', signatureUint8Array);
+    console.log('Signature Hex:', signature);
+    console.log('Recovery Bit:', recoveryBit);
 
     try {
       const {
@@ -38,6 +46,8 @@ function Transfer({ address, setBalance, privateKey }) {
         amount: parseInt(sendAmount),
         recipient,
         signature,
+        message: toHex(messageHash),
+        recoveryBit,
       });
       setBalance(balance);
     } catch (ex) {

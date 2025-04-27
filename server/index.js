@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const port = 3042;
+const secp = require('ethereum-cryptography/secp256k1');
+const { toHex, hexToBytes } = require('ethereum-cryptography/utils');
+const publicKeyToAddress = require('./scripts/publicKeyToAddress');
 
 app.use(cors());
 app.use(express.json());
@@ -20,10 +23,28 @@ app.get('/balance/:address', (req, res) => {
 
 app.post('/send', (req, res) => {
   // TODO: get a signature from the client
-  // recover the public address from the signature
-  // that address should be the sender
+  const { signature, message, recoveryBit } = req.body;
 
+  // recover the public address from the signature
+  const publicKey = secp.recoverPublicKey(message, signature, recoveryBit);
+  const address = publicKeyToAddress(toHex(publicKey));
+
+  // that address should be the sender
   const { sender, recipient, amount } = req.body;
+  if (address !== sender) {
+    res.status(400).send({ message: 'Invalid signature!' });
+    return;
+  }
+  if (sender === recipient) {
+    res
+      .status(400)
+      .send({ message: 'Sender and recipient cannot be the same!' });
+    return;
+  }
+  if (amount <= 0) {
+    res.status(400).send({ message: 'Invalid amount!' });
+    return;
+  }
 
   setInitialBalance(sender);
   setInitialBalance(recipient);
