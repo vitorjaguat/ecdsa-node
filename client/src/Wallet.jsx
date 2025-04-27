@@ -3,7 +3,7 @@ import server from './server';
 
 import { toHex } from 'ethereum-cryptography/utils';
 import { keccak256 } from 'ethereum-cryptography/keccak';
-import secp from 'ethereum-cryptography/secp256k1';
+import * as secp from 'ethereum-cryptography/secp256k1';
 
 // generate address from hex private key
 function privateKeyToAddress(privateKey) {
@@ -31,7 +31,7 @@ function Wallet({
     setPrivateKey(privateKey);
     const addressFromPrivateKey = privateKeyToAddress(privateKey);
     setAddress(addressFromPrivateKey);
-    if (address) {
+    if (addressFromPrivateKey) {
       const {
         data: { balance },
       } = await server.get(`balance/${addressFromPrivateKey}`);
