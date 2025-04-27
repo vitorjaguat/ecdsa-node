@@ -5,6 +5,7 @@ This project is an example of using a client and server to facilitate transfers 
 However, something that we would like to incorporate is Public Key Cryptography. By using Elliptic Curve Digital Signatures we can make it so the server only allows transfers that have been signed for by the person who owns the associated address.
 
 ## Video Instructions
+
 For an overview of this project as well as getting started instructions, check out the following video:
 
 https://www.youtube.com/watch?v=GU5vlKaNvmI
@@ -12,22 +13,22 @@ https://www.youtube.com/watch?v=GU5vlKaNvmI
 If you are interested in a text-based guide, please read on below. ⬇️
 
 ## Setup Instructions
- 
+
 ### Client
 
 The client folder contains a [react app](https://reactjs.org/) using [vite](https://vitejs.dev/). To get started, follow these steps:
 
 1. Open up a terminal in the `/client` folder
 2. Run `npm install` to install all the dependencies
-3. Run `npm run dev` to start the application 
+3. Run `npm run dev` to start the application
 4. Now you should be able to visit the app at http://localhost:5173/
 
 ### Server
 
 The server folder contains a Node.js server using [express](https://expressjs.com/). To run the server, follow these steps:
 
-1. Open a terminal within the `/server` folder 
-2. Run `npm install` to install all the dependencies 
+1. Open a terminal within the `/server` folder
+2. Run `npm install` to install all the dependencies
 3. Run `node index` to start the server
 
 _Hint_ - > Run `npm i -g nodemon` and then run `nodemon index` instead of `node index` to automatically restart the server on any changes!
@@ -41,6 +42,7 @@ Only read this section **AFTER** you've followed the **Setup Instructions** abov
 This project begins with a client that is allowed to transfer any funds from any account to another account. That's not very secure. By applying digital signatures we can require that only the user with the appropriate private key can create a signature that will allow them to move funds from one account to the other. Then, the server can verify the signature to move funds from one account to another.
 
 Your project is considered **done** when you have built the following features in a secure way (NOTE: your project is not final if it still uses private keys anywhere on the client side!):
+
 - Incorporate public key cryptography so transfers can only be completed with a valid signature
 - The person sending the transaction should have to verify that they own the private key corresponding to the address that is sending funds
 
@@ -51,6 +53,7 @@ Your project is considered **done** when you have built the following features i
 There are many ways to approach this project. The goal is to create a client-server webapp that safely validates transaction intents, using public key cryptography, between accounts. Below is a phased approach that clearly details out a roadmap to solving this goal:
 
 ### **Phase 1**
+
 - You have successfully git cloned this project onto your local machine
 - You installed all dependencies by running `npm i` both in the `/client` and in the `/server` folders
 - You have a website running on http://localhost:5173/ by running `npm run dev` in the `/client` folder
@@ -63,7 +66,7 @@ If all of these are complete, move on to **Phase 2**! ⬇️
 
 ### **Phase 2**
 
-At this point, our app security is not very good. If we deploy this app now, anyone can access any balance and make changes. This means that Alice (or really.. anyone!) can type in "0x2" and transfer an amount, even if that account is not actually her account! We need to find a way to assign ownership of accounts. 
+At this point, our app security is not very good. If we deploy this app now, anyone can access any balance and make changes. This means that Alice (or really.. anyone!) can type in "0x2" and transfer an amount, even if that account is not actually her account! We need to find a way to assign ownership of accounts.
 
 Let's incorporate some of the cryptography we've learned in the previous lessons to build a half-baked solution; we will use [Ethereum Cryptography library](https://www.npmjs.com/package/ethereum-cryptography/v/1.2.0).
 
@@ -80,8 +83,8 @@ The key change is to change the `balances` object in the `/server/index.js` file
 You can do this programmatically (by editting the `/server/index.js` file) or using a script with the following functions:
 
 ```js
-const secp = require("ethereum-cryptography/secp256k1");
-const { toHex } = require("ethereum-cryptography/utils");
+const secp = require('ethereum-cryptography/secp256k1');
+const { toHex } = require('ethereum-cryptography/utils');
 
 const privateKey = secp.utils.randomPrivateKey();
 
@@ -103,14 +106,15 @@ To pass **Phase 2**:
 > Extra credit: Make your accounts look like Ethereum addresses! (ie. instead of the long public key hexadecimal format, use the "0x" + 20 hex characters format of Ethereum - this is a fun challenge to get right!)
 
 - You are able to transfer funds between the addresses, via public keys/addresses of your server's users, that have been generated by inputting a private key into the webapp.
- 
+
 ### **Phase 3**
 
 Asking users to input a private key directly into your webapp is a big no-no! 🚫
 
-The next step for YOU to accomplish is to make it so that you can send a signed transaction to the server, via your webapp; the server should the authenticate that transaction by deriving the public key associated with it. If that public key has funds, move the funds to the intended recipient. All of this should be accomplished via digital signatures alone.
+The next step for YOU to accomplish is to make it so that you can send a signed transaction to the server, via your webapp; the server should then authenticate that transaction by deriving the public key associated with it. If that public key has funds, move the funds to the intended recipient. All of this should be accomplished via digital signatures alone.
 
 Hint: In `index.js`, you will want to:
+
 - get a signature from the client-side application
 - recover the public address from the signature itself
 - validate the recovered address against your server's `balances` object
